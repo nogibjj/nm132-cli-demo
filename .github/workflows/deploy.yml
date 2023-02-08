@@ -1,4 +1,4 @@
-name: Rust CI/CD Pipeline
+name: CI/CD Pipeline
 on:
   push:
     branches: [ "main" ]

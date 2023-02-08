@@ -1,3 +1,5 @@
+![CI/CD Pipeline](https://github.com/github/docs/actions/workflows/deploy.yml/badge.svg)
+
 # AWS S3 Rust CLI Tool
 
 The current [AWS CLI](https://github.com/aws/aws-cli/tree/v2) is written in Python. For this project I have built a mini AWS S3 CLI using Rust which supports CRUD operations for buckets and objects.
