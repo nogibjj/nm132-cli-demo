@@ -5,6 +5,8 @@ use aws_sdk_s3::types::ByteStream;
 use aws_sdk_s3::{Client, Error};
 use std::path::Path;
 use std::process;
+use tokio::fs::File;
+use tokio::io::copy;
 
 // Determine AWS region
 pub async fn bucket_region() -> Result<String, Error> {
@@ -22,6 +24,7 @@ pub async fn client() -> Result<Client, Error> {
         .or_else("us-west-2");
     let shared_config = aws_config::from_env().region(region_provider).load().await;
     let client = Client::new(&shared_config);
+    // println!("{:?}", client);
     Ok(client)
 }
 
@@ -67,7 +70,7 @@ pub async fn create_bucket(client: &Client, bucket: &str, region: &str) -> Resul
     let cfg = CreateBucketConfiguration::builder()
         .location_constraint(constraint)
         .build();
-    client
+    let _resp = client
         .create_bucket()
         .create_bucket_configuration(cfg)
         .bucket(bucket)
@@ -186,5 +189,32 @@ pub async fn delete_object(client: &Client, bucket: &str, key: &str) -> Result<(
 
     println!("Object {key} deleted from bucket {bucket}.");
 
+    Ok(())
+}
+
+pub async fn get_object(client: &Client, bucket: &str, key: &str) -> Result<(), Error> {
+    // Check key exists in bucket
+    let resp = client.list_objects_v2().bucket(bucket).send().await?;
+    let objects = resp.contents().unwrap_or_default();
+    let mut key_exists = false;
+    for object in objects {
+        if object.key().unwrap_or_default() == key {
+            key_exists = true;
+        }
+    }
+    if !key_exists {
+        println!("Key {key} does not exist in bucket {bucket}");
+        process::exit(1);
+    }
+    // Get object
+    let resp = client.get_object().bucket(bucket).key(key).send().await?;
+    // Get image as byte stream from response body
+    let fpath = format!("./test/{}", key);
+    let mut img_stream = resp.body.into_async_read();
+    // Create a file to write the image data to
+    let mut tmp_file = File::create(&fpath).await.unwrap();
+    // Copy the image data into the file
+    let _file_msg = copy(&mut img_stream, &mut tmp_file).await.unwrap();
+    println!("Object downloaded to {fpath}.");
     Ok(())
 }

@@ -35,6 +35,12 @@ enum Commands {
         #[clap(short, long)]
         key: Option<String>,
     },
+    Get {
+        #[clap(short, long)]
+        bucket: String,
+        #[clap(short, long)]
+        key: String,
+    },
 }
 
 #[tokio::main]
@@ -70,6 +76,9 @@ async fn main() {
                 s3cli::delete_bucket(&client, &bucket).await.unwrap();
             }
         },
+        Some(Commands::Get { bucket, key }) => {
+            s3cli::get_object(&client, &bucket, &key).await.unwrap();
+        }
         None => {
             println!("No subcommand was used");
         }
