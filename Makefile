@@ -15,9 +15,6 @@ lint:
 test:
 	cargo test --quiet
 
-run:
-	cargo run
-
 release:
 	cargo build --release
 

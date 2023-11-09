@@ -1,22 +1,25 @@
-![CI/CD Pipeline](https://github.com/athletedecoded/rust-s3-cli/actions/workflows/deploy.yml/badge.svg)
+![CI/CD Pipeline](https://github.com/athletedecoded/candle-cli/actions/workflows/CICD.yml/badge.svg)
 
-# AWS S3 Rust CLI Tool
+# AWS Candle CLI Tool
 
-The current [AWS CLI](https://github.com/aws/aws-cli/tree/v2) is written in Python. For this project I have built a mini AWS S3 CLI using Rust which supports CRUD operations for buckets and objects.
+A Rust CLI tool to support [Candle Cookbook](https://github.com/nogibjj/candle-cookbook/tree/main) on AWS built using the [AWS SDK for Rust](https://github.com/awslabs/aws-sdk-rust) 
 
-![image](./assets/s3-cli.png)
-
-## Project Goals/Outcomes
-
-* Develop my first Rust project
-* Use Github Codespaces and Copilot
-* Integrate the 'AWS SDK for Rust' into a Rust project
 
 ## Setup
 
-1. Create an [AWS IAM User Policy for S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-iam-awsmanpol.html)
+1. Create an AWS IAM User Policy with `AmazonS3FullAccess` and `AmazonEC2FullAccess` permissions
 
-2. Configure your [~/.aws/credentials file](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where) with environment variables: `aws_access_key_id`, `aws_secret_access_key` and `region`
+2. Create an access key for your user
+
+3. Create `.env` file and configure with AWS credentials
+
+```
+# $touch .env
+AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY>
+AWS_SECRET_ACCESS_KEY=<YOUR_ACCESS_SECRET>
+AWS_DEFAULT_REGION=<YOUR_AWS_REGION>
+```
+
 
 ## Useage
 
@@ -65,24 +68,12 @@ $ cargo run get --bucket <bucket_name> --key <object_key>
 
 ## CI/CD
 
-Github Actions configured in [.github/workflows/rust.yml](.github/workflows/rust.yml)
+Github Actions configured in [.github/workflows/CICD.yml](.github/workflows/CICD.yml)
 
 **Build Executable**
 ```
 $ make release
 ```
-
-
-## Progress Log
-
-- [x] Create an [AWS IAM User Policy for S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-iam-awsmanpol.html)
-- [x] Configure Github Codespaces with [AWS Toolkit Credential Profile](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/setup-credentials.html)
-- [x] Initialise Rust project with [AWS SDK for Rust](https://github.com/awslabs/aws-sdk-rust)
-- [x] Establish basic AWS client connection to list S3 buckets
-- [x] Add clap command line parsing for arguments (bucket name, local file name)
-- [x] Bucket fxns: list, create new, check if exists, delete if empty
-- [x] Object fxns: list objects in bucket, upload to existing bucket, upload to new bucket, delete
-- [x] CI/CD with Github Actions
 
 ## References
 

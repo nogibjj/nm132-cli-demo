@@ -1,12 +1,14 @@
+// use aws_config::meta::region::RegionProviderChain;
 use clap::Parser;
+mod s3;
 
 #[derive(Parser)]
 //add extended help
 #[clap(
     version = "1.0",
     author = "Kahlia Hogg",
-    about = "AWS S3 CLI in Rust",
-    after_help = "Example: aws-cli"
+    about = "AWS Candle CLI",
+    after_help = "Example: aws-candle"
 )]
 struct Cli {
     #[clap(subcommand)]
@@ -46,38 +48,41 @@ enum Commands {
 #[tokio::main]
 async fn main() {
     let args = Cli::parse();
-    let client = s3cli::client().await.unwrap();
+    // Load AWS credentials from .env file
+    dotenv::dotenv().ok();
+    let shared_config = aws_config::load_from_env().await;
+    let client = s3::s3client(shared_config).await.unwrap();
     // Match on subcommand
     match args.command {
         Some(Commands::Create { bucket }) => {
-            let bucket_region = s3cli::bucket_region().await.unwrap();
-            s3cli::create_bucket(&client, &bucket, &bucket_region)
+            let bucket_region = s3::check_region().await.unwrap();
+            s3::create_bucket(&client, &bucket, &bucket_region)
                 .await
                 .unwrap();
         }
         Some(Commands::List { bucket }) => match bucket {
             Some(bucket) => {
-                s3cli::list_objects(&client, &bucket).await.unwrap();
+                s3::list_objects(&client, &bucket).await.unwrap();
             }
             None => {
-                s3cli::list_buckets(&client).await.unwrap();
+                s3::list_buckets(&client).await.unwrap();
             }
         },
         Some(Commands::Upload { bucket, filepath }) => {
-            s3cli::upload_object(&client, &bucket, &filepath)
+            s3::upload_object(&client, &bucket, &filepath)
                 .await
                 .unwrap();
         }
         Some(Commands::Delete { bucket, key }) => match key {
             Some(key) => {
-                s3cli::delete_object(&client, &bucket, &key).await.unwrap();
+                s3::delete_object(&client, &bucket, &key).await.unwrap();
             }
             None => {
-                s3cli::delete_bucket(&client, &bucket).await.unwrap();
+                s3::delete_bucket(&client, &bucket).await.unwrap();
             }
         },
         Some(Commands::Get { bucket, key }) => {
-            s3cli::get_object(&client, &bucket, &key).await.unwrap();
+            s3::get_object(&client, &bucket, &key).await.unwrap();
         }
         None => {
             println!("No subcommand was used");

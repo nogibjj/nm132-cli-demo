@@ -1,31 +1,28 @@
+use aws_config::SdkConfig;
 // AWS S3 Configuration
 use aws_config::meta::region::RegionProviderChain;
-use aws_sdk_s3::model::{BucketLocationConstraint, CreateBucketConfiguration};
-use aws_sdk_s3::types::ByteStream;
+use aws_sdk_s3::types::{BucketLocationConstraint, CreateBucketConfiguration};
+use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::{Client, Error};
 use std::path::Path;
 use std::process;
 use tokio::fs::File;
 use tokio::io::copy;
 
-// Determine AWS region
-pub async fn bucket_region() -> Result<String, Error> {
+// Create S3 client
+pub async fn s3client(shared_config: SdkConfig) -> Result<Client, Error> {
+    let client = Client::new(&shared_config);
+    Ok(client)
+}
+
+// Check AWS region
+pub async fn check_region() -> Result<String, Error> {
     let region_provider = RegionProviderChain::first_try(None)
         .or_default_provider()
         .or_else("us-west-2");
     let region = region_provider.region().await.unwrap();
+    println!("Region set as: {region}");
     Ok(region.to_string())
-}
-
-// Create AWS client
-pub async fn client() -> Result<Client, Error> {
-    let region_provider = RegionProviderChain::first_try(None)
-        .or_default_provider()
-        .or_else("us-west-2");
-    let shared_config = aws_config::from_env().region(region_provider).load().await;
-    let client = Client::new(&shared_config);
-    // println!("{:?}", client);
-    Ok(client)
 }
 
 /* -----------------------------
@@ -35,7 +32,7 @@ pub async fn client() -> Result<Client, Error> {
 // List all buckets
 pub async fn list_buckets(client: &Client) -> Result<(), Error> {
     let resp = client.list_buckets().send().await?;
-    let buckets = resp.buckets().unwrap_or_default();
+    let buckets = resp.buckets();
     let num_buckets = buckets.len();
     println!("Found {num_buckets} buckets.");
     println!();
@@ -49,7 +46,7 @@ pub async fn list_buckets(client: &Client) -> Result<(), Error> {
 // Check if bucket exists
 pub async fn bucket_exists(client: &Client, bucket_name: &str) -> Result<bool, Error> {
     let resp = client.list_buckets().send().await?;
-    let buckets = resp.buckets().unwrap_or_default();
+    let buckets = resp.buckets();
     for bucket in buckets {
         if bucket.name().unwrap_or_default() == bucket_name {
             return Ok(true);
@@ -88,7 +85,7 @@ pub async fn delete_bucket(client: &Client, bucket: &str) -> Result<(), Error> {
         process::exit(1);
     }
     let resp = client.list_objects_v2().bucket(bucket).send().await?;
-    let objects = resp.contents().unwrap_or_default();
+    let objects = resp.contents();
     let num_objects = objects.len();
     if num_objects != 0 {
         println!("Bucket {bucket} is not empty. Cannot delete.");
@@ -115,7 +112,7 @@ pub async fn list_objects(client: &Client, bucket: &str) -> Result<(), Error> {
 
     // If exists, list objects
     let resp = client.list_objects_v2().bucket(bucket).send().await?;
-    let objects = resp.contents().unwrap_or_default();
+    let objects = resp.contents();
     let num_objects = objects.len();
 
     println!("Found {num_objects} objects in bucket {bucket}");
@@ -130,7 +127,7 @@ pub async fn list_objects(client: &Client, bucket: &str) -> Result<(), Error> {
 pub async fn upload_object(client: &Client, bucket: &str, filepath: &str) -> Result<(), Error> {
     // if bucket doesn't exist, create it
     if !bucket_exists(client, bucket).await? {
-        let bucket_region = bucket_region().await.unwrap();
+        let bucket_region = check_region().await.unwrap();
         create_bucket(client, bucket, &bucket_region).await?;
     }
 
@@ -168,7 +165,7 @@ pub async fn delete_object(client: &Client, bucket: &str, key: &str) -> Result<(
 
     // Check key exists in bucket
     let resp = client.list_objects_v2().bucket(bucket).send().await?;
-    let objects = resp.contents().unwrap_or_default();
+    let objects = resp.contents();
     let mut key_exists = false;
     for object in objects {
         if object.key().unwrap_or_default() == key {
@@ -195,7 +192,7 @@ pub async fn delete_object(client: &Client, bucket: &str, key: &str) -> Result<(
 pub async fn get_object(client: &Client, bucket: &str, key: &str) -> Result<(), Error> {
     // Check key exists in bucket
     let resp = client.list_objects_v2().bucket(bucket).send().await?;
-    let objects = resp.contents().unwrap_or_default();
+    let objects = resp.contents();
     let mut key_exists = false;
     for object in objects {
         if object.key().unwrap_or_default() == key {
