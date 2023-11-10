@@ -1,4 +1,4 @@
-![CI/CD Pipeline](https://github.com/athletedecoded/candle-cli/actions/workflows/CICD.yml/badge.svg)
+![CI/CD Pipeline](https://github.com/athletedecoded/aws-candle/actions/workflows/CICD.yml/badge.svg)
 
 # AWS Candle CLI Tool
 
