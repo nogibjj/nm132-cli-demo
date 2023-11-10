@@ -21,7 +21,7 @@ enum Commands {
     List(ListArgs),             // list resources i.e. s3 buckets, ec2 instances
     Instance(InstanceArgs),     // start/stop ec2 instance by id
     Bucket(BucketArgs),         // create, list items, or delete a bucket
-    Blob(BlobArgs),             // upload, delete or get blob from a bucket
+    Object(ObjectArgs),         // upload, delete or get object from a bucket
 }
 
 #[derive(Args)]
@@ -59,13 +59,13 @@ struct BucketArgs {
 }
 
 #[derive(Args)]
-struct BlobArgs {
+struct ObjectArgs {
     #[arg(short, long)]
     bucket: String, // bucket name
     #[arg(short, long)]
-    key: String, // blob name or local path
+    key: String, // object name or local path
     #[arg(short, long)]
-    action: String, // blob key
+    action: String, // object key
 }
 
 #[tokio::main]
@@ -133,29 +133,29 @@ async fn main() {
                 }
             }
         }
-        // S3 Blob Commands
-        Some(Commands::Blob(args)) => {
+        // S3 Object Commands
+        Some(Commands::Object(args)) => {
             match args.action.as_str() {
-                // upload blob
+                // upload object
                 "upload" => {
                     s3::upload_object(&s3client, &args.bucket, &args.key)
                         .await
                         .unwrap();
                 }
-                // delete blob
+                // delete object
                 "delete" => {
                     s3::delete_object(&s3client, &args.bucket, &args.key)
                         .await
                         .unwrap();
                 }
-                // get blob
+                // get object
                 "get" => {
                     s3::get_object(&s3client, &args.bucket, &args.key)
                         .await
                         .unwrap();
                 }
                 _ => {
-                    println!("Useage: cargo run blob --bucket <bucket_name> --key <blob_key> --action <upload|delete|get>");
+                    println!("Useage: cargo run object --bucket <bucket_name> --key <object_key> --action <upload|delete|get>");
                 }
             }
         }

@@ -23,48 +23,32 @@ AWS_DEFAULT_REGION=<YOUR_AWS_REGION>
 
 ## Useage
 
-**List all S3 buckets**
+**List Resources**
 ```
-$ cargo run list
-```
-
-**List all objects in a specified S3 bucket**
-```
-$ cargo run list --bucket <bucket_name>
-# ex: cargo run list --bucket ids721
+$ cargo run list <--s3> <--ec2>
 ```
 
-**Create new S3 bucket**
+**Launch/Stop EC2 Instance**
 ```
-$ cargo run create --bucket <bucket_name>
-# ex: cargo run create --bucket ids721
-```
-
-**Upload an object to an S3 bucket**
-
-*NB: Will create bucket if DNE*
-```
-$ cargo run upload --bucket <bucket_name> --filepath <path_to_file>
-# ex: cargo run upload --bucket ids721 --filepath ./test/test.png
+$ cargo run instance --id <INSTANCE_ID> --action <start|stop>
 ```
 
-**Delete an object from an S3 bucket**
+**S3 Buckets**
 ```
-$ cargo run delete --bucket <bucket_name> --key <object_key>
-# ex: cargo run delete --bucket ids721 --key test.png
-```
-
-**Delete an empty S3 bucket**
-```
-$ cargo run delete --bucket <bucket_name>
-# ex: cargo run delete --bucket ids721
+$ cargo run bucket --name <BUCKET_NAME> --action <list|create|delete>
 ```
 
-**Get an object from an S3 bucket**
+**S3 Objects**
+
+*NB: Will create bucket if DNE. For "upload" --key is path/to/object*
+
 ```
-$ cargo run get --bucket <bucket_name> --key <object_key>
-# ex: cargo run get --bucket ids721 --key test.jpg
+$ cargo run object --bucket <bucket_name> --key <object_key> --action <upload|delete|get>"
+# ex: cargo run object --bucket my-bucket --key ./test/test.png --action upload
+# ex: cargo run object --bucket my-bucket --key test.png --action get
 ```
+
+
 
 ## CI/CD
 
@@ -80,4 +64,3 @@ $ make release
 * [AWS SDK for Rust](https://github.com/awslabs/aws-sdk-rust)
 * [AWS Toolkit Credential Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where)
 * [AWS Credentials for VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/setup-credentials.html)
-* [AWS IAM User Policy for S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-iam-awsmanpol.html)
