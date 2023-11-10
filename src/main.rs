@@ -106,6 +106,11 @@ async fn main() {
                         .await
                         .unwrap();
                 }
+                "connect" => {
+                    ec2::ssh_instance(&ec2client, &args.id.unwrap())
+                        .await
+                        .unwrap();
+                }
                 _ => {
                     println!("Useage: cargo run instance --id <instance_id> --action <start|stop>");
                 }
