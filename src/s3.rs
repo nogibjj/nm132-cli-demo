@@ -1,6 +1,3 @@
-use aws_config::SdkConfig;
-// AWS S3 Configuration
-use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::types::{BucketLocationConstraint, CreateBucketConfiguration};
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::{Client, Error};
@@ -10,19 +7,10 @@ use tokio::fs::File;
 use tokio::io::copy;
 
 // Create S3 client
-pub async fn s3client(shared_config: SdkConfig) -> Result<Client, Error> {
+pub async fn s3client() -> Result<Client, Error> {
+    let shared_config = aws_config::load_from_env().await;
     let client = Client::new(&shared_config);
     Ok(client)
-}
-
-// Check AWS region
-pub async fn check_region() -> Result<String, Error> {
-    let region_provider = RegionProviderChain::first_try(None)
-        .or_default_provider()
-        .or_else("us-west-2");
-    let region = region_provider.region().await.unwrap();
-    println!("Region set as: {region}");
-    Ok(region.to_string())
 }
 
 /* -----------------------------
@@ -56,24 +44,36 @@ pub async fn bucket_exists(client: &Client, bucket_name: &str) -> Result<bool, E
 }
 
 // Create new bucket
-pub async fn create_bucket(client: &Client, bucket: &str, region: &str) -> Result<(), Error> {
+pub async fn create_bucket(client: &Client, bucket: &str) -> Result<(), Error> {
     // Check if bucket exists
     let exists = bucket_exists(client, bucket).await?;
     if exists {
         println!("Bucket {bucket} already exists.");
         process::exit(1);
     }
-    let constraint = BucketLocationConstraint::from(region);
-    let cfg = CreateBucketConfiguration::builder()
-        .location_constraint(constraint)
-        .build();
-    let _resp = client
-        .create_bucket()
-        .create_bucket_configuration(cfg)
-        .bucket(bucket)
-        .send()
-        .await?;
-    println!("Creating bucket named: {bucket} in region: {region}");
+    let region = std::env::var("AWS_DEFAULT_REGION").unwrap();
+    match region.as_str() {
+        "us-east-1" => {
+            let _resp = client
+                .create_bucket()
+                .bucket(bucket)
+                .send()
+                .await?;
+        }
+        _ => {
+            let constraint = BucketLocationConstraint::from(region.as_str());
+            let bucket_config = CreateBucketConfiguration::builder()
+                .location_constraint(constraint)
+                .build();
+            let _resp = client
+                .create_bucket()
+                .bucket(bucket)
+                .create_bucket_configuration(bucket_config)
+                .send()
+                .await?;
+        }
+    }
+    println!("Created bucket: {bucket}");
     Ok(())
 }
 
@@ -127,8 +127,7 @@ pub async fn list_objects(client: &Client, bucket: &str) -> Result<(), Error> {
 pub async fn upload_object(client: &Client, bucket: &str, filepath: &str) -> Result<(), Error> {
     // if bucket doesn't exist, create it
     if !bucket_exists(client, bucket).await? {
-        let bucket_region = check_region().await.unwrap();
-        create_bucket(client, bucket, &bucket_region).await?;
+        create_bucket(client, bucket).await?;
     }
 
     let body = ByteStream::from_path(Path::new(filepath)).await;
@@ -206,7 +205,7 @@ pub async fn get_object(client: &Client, bucket: &str, key: &str) -> Result<(), 
     // Get object
     let resp = client.get_object().bucket(bucket).key(key).send().await?;
     // Get image as byte stream from response body
-    let fpath = format!("./test/{}", key);
+    let fpath = format!("./{}", key);
     let mut img_stream = resp.body.into_async_read();
     // Create a file to write the image data to
     let mut tmp_file = File::create(&fpath).await.unwrap();
