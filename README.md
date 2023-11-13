@@ -39,18 +39,19 @@ Args:
 * --action:
     * start: start instance
     * stop: stop instance
-    * connect: ssh into instance -- tip: first run `cargo run list --ec2` to check instance is running
 ```
-$ cargo run instance --id <INSTANCE_ID> --action <start|stop|connect>
+$ cargo run instance --id <INSTANCE_ID> --action <start|stop>
 ```
 
-Once connected to EC2 you can get and run any of the prebuilt binaries [here](https://github.com/athletedecoded/cookbook-binaries/tree/main/binaries). Make sure to run `chmod +x` to give EC2 execution permissions!
+**EC2 Connect**
+
+Quick Tip: first run `cargo run list --ec2` to check instance is running!
+
+Args:
+* --id ~ instance id
 
 ```
-# Ex
-wget -O mistral-cudnn https://github.com/athletedecoded/cookbook-binaries/raw/main/binaries/cudnn/mistral?download=
-chmod +x mistral-cudnn
-./mistral-cudnn --prompt "who invented the lightbulb"
+$ cargo run connect --id <INSTANCE_ID>
 ```
 
 To close SSH tunnel run `exit`. Be sure to stop your instance when done.
@@ -81,6 +82,17 @@ Args
 $ cargo run object --bucket <bucket_name> --key <object_key> --action <upload|delete|get>"
 # ex: cargo run object --bucket my-bucket --key ./test/test.png --action upload
 # ex: cargo run object --bucket my-bucket --key test.png --action get
+```
+
+## Model Sources
+
+Once connected to EC2 you can get and run any of the prebuilt binaries [here](https://github.com/athletedecoded/cookbook-binaries/tree/main/binaries). Make sure to run `chmod +x` to give EC2 execution permissions!
+
+```
+# Ex
+wget -O mistral-cudnn https://github.com/athletedecoded/cookbook-binaries/raw/main/binaries/cudnn/mistral?download=
+chmod +x mistral-cudnn
+./mistral-cudnn --prompt "who invented the lightbulb"
 ```
 
 ## CI/CD

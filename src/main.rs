@@ -17,21 +17,29 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    // Download(DownloadArgs),  // download binaries from s3 or glfs
     List(ListArgs),             // list resources i.e. s3 buckets, ec2 instances
     Instance(InstanceArgs),     // start/stop ec2 instance by id
+    Connect(ConnectArgs),         // connect to ec2 instance by id with model sync options   
     Bucket(BucketArgs),         // create, list items, or delete a bucket
     Object(ObjectArgs),         // upload, delete or get object from a bucket
 }
 
 #[derive(Args)]
-struct DownloadArgs {
+struct ModelArgs {
    #[arg(short, long)]
    src: Option<String>,
    #[arg(short, long)]
+   dir: Option<String>,
+   #[arg(short, long)]
    target: Option<String>,
    #[arg(short, long)]
-   model: Option<String>,   // "all" will sync entire folder
+   mdl: Option<String>,   // "all" will sync entire folder
+}
+
+#[derive(Args)]
+struct ConnectArgs {
+    #[arg(short, long)]
+    id: Option<String>,
 }
 
 #[derive(Args)]
@@ -106,15 +114,18 @@ async fn main() {
                         .await
                         .unwrap();
                 }
-                "connect" => {
-                    ec2::ssh_instance(&ec2client, &args.id.unwrap())
-                        .await
-                        .unwrap();
-                }
                 _ => {
                     println!("Useage: cargo run instance --id <instance_id> --action <start|stop>");
                 }
             }
+        }
+        // Launch Commands
+        Some(Commands::Connect(args)) => {
+            // SSH connect to instance by id
+            ec2::ssh_connect(&ec2client, &args.id.unwrap())
+                .await
+                .unwrap();
+            
         }
         // S3 Bucket Commands
         Some(Commands::Bucket(args)) => {

@@ -65,7 +65,7 @@ pub async fn get_endpoint(client: &Client, id: &str) -> Result<String, Error> {
 }
 
 // connect to instance via ssh
-pub async fn ssh_instance(client: &Client, id: &str) -> Result<(), Error> {
+pub async fn ssh_connect(client: &Client, id: &str) -> Result<(), Error> {
     let ec2_path = std::env::var("EC2_KEY").expect("EC2_KEY not set");
     println!("{}", ec2_path);
     // Check key-pair security
