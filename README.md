@@ -7,11 +7,13 @@ A Rust CLI tool to support [Candle Cookbook](https://github.com/nogibjj/candle-c
 
 ## Setup
 
-1. Create an AWS IAM User Policy with `AmazonS3FullAccess` and `AmazonEC2FullAccess` permissions
+1. Configure an EC2 instance according to the [Hello, Candle on AWS! tutorial](https://nogibjj.github.io/candle-cookbook/aws/hello-aws.html)
 
-2. Create an access key for your user
+2. Create an AWS IAM User Policy "Candle-Cli" with `AmazonS3FullAccess` and `AmazonEC2FullAccess` permissions
 
-3. Create `.env` file and configure with AWS credentials and EC2 Key Pair
+3. Create an access key for your "Candle-Cli" user
+
+4. Create `.env` file and configure with AWS credentials and EC2 Key Pair
 
 ```
 # $touch .env
@@ -21,14 +23,15 @@ AWS_DEFAULT_REGION=<YOUR_AWS_REGION>
 EC2_KEY=PATH/TO/EC2_KEY_PAIR.pem
 ```
 
-## Useage
+## CLI Useage
 
 **List Resources**
 
 Args:
-* --s3 ~ list s3 resources
-* --ec2 ~ list ec2 resources and status
+* --s3 ~ flag to list s3 resources
+* --ec2 ~ flag to list ec2 resources and status
 ```
+# To run simultaneously
 $ cargo run list --s3 --ec2
 ```
 
@@ -43,7 +46,7 @@ Args:
 $ cargo run instance --id <INSTANCE_ID> --action <start|stop>
 ```
 
-**EC2 Connect**
+**SSH Connect to EC2 Instance**
 
 Quick Tip: first run `cargo run list --ec2` to check instance is running!
 
@@ -52,9 +55,13 @@ Args:
 
 ```
 $ cargo run connect --id <INSTANCE_ID>
-```
 
-To close SSH tunnel run `exit`. Be sure to stop your instance when done.
+# To close SSH tunnel
+$ exit
+
+# Make sure to stop EC2 once finished
+$ cargo run instance --id <INSTANCE_ID> --action stop
+```
 
 **S3 Buckets**
 

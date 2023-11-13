@@ -18,6 +18,7 @@ pub async fn list_instances(client: &Client) -> Result<(), Error> {
         .await?;
     for reservation in resp.reservations() {
         for instance in reservation.instances() {
+            println!("Instance Name: {}", instance.tags().get(0).unwrap().value().unwrap());
             println!("Instance ID: {}", instance.instance_id().unwrap());
             println!(
                 "State:       {:?}",
