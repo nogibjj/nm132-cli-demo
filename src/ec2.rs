@@ -66,19 +66,31 @@ pub async fn get_endpoint(client: &Client, id: &str) -> Result<String, Error> {
 }
 
 // connect to instance via ssh
-pub async fn ssh_connect(client: &Client, id: &str) -> Result<(), Error> {
+pub async fn ssh_connect(client: &Client, id: &str, mnt_dir: &str) -> Result<(), Error> {
     let ec2_path = std::env::var("EC2_KEY").expect("EC2_KEY not set");
-    println!("{}", ec2_path);
     // Check key-pair security
     std::process::Command::new("chmod")
     .arg("400")
     .arg(&ec2_path)
     .spawn()
     .expect("Failed to execute ssh command");
-
+    // Get instance endpoint
     let endpoint = get_endpoint(client, id).await?;
+    // If mount, mount local directory to instance
+    println!("Mounting directory {mnt_dir} to EC2");
+    if mnt_dir != " " {
+        let mount_command = format!("scp -i {ec2_path} -r {mnt_dir} ubuntu@{endpoint}:/home/ubuntu");
+        std::process::Command::new("sh")
+            .arg("-c")
+            .arg(&mount_command)
+            .spawn()
+            .expect("Failed to execute ssh command")
+            .wait()
+            .expect("Failed to wait for ssh command to complete");
+    }
+    // Open SSH tunnel
+    println!("Opening SSH tunnel to {}", endpoint);
     let ssh_command = format!("ssh -t -o StrictHostKeyChecking=no -i {ec2_path} ubuntu@{endpoint}");
-    println!("{}", ssh_command);
     std::process::Command::new("sh")
         .arg("-c")
         .arg(&ssh_command)

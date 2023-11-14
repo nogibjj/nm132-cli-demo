@@ -40,6 +40,8 @@ struct ModelArgs {
 struct ConnectArgs {
     #[arg(short, long)]
     id: Option<String>,
+    #[arg(short, long)]
+    mnt: Option<String>,
 }
 
 #[derive(Args)]
@@ -119,13 +121,17 @@ async fn main() {
                 }
             }
         }
-        // Launch Commands
+        // Connect Commands
         Some(Commands::Connect(args)) => {
+            // If arg.mnt is not pass empty string as mount directory else pass arg.mnt
+            let mnt_dir = match args.mnt {
+                Some(mnt) => mnt,
+                None => " ".to_string(),
+            };
             // SSH connect to instance by id
-            ec2::ssh_connect(&ec2client, &args.id.unwrap())
-                .await
-                .unwrap();
-            
+            ec2::ssh_connect(&ec2client, &args.id.unwrap(), &mnt_dir)
+            .await
+            .unwrap();
         }
         // S3 Bucket Commands
         Some(Commands::Bucket(args)) => {

@@ -7,7 +7,7 @@ A Rust CLI tool to support [Candle Cookbook](https://github.com/nogibjj/candle-c
 
 ## Setup
 
-1. Configure an EC2 instance according to the [Hello, Candle on AWS! tutorial](https://nogibjj.github.io/candle-cookbook/aws/hello-aws.html)
+1. Configure an [EC2 instance](https://aws.amazon.com/ec2/instance-types/) depending on your model target and memory requirements. For a GPU Deep Learning enabled instance follow the [Hello, Candle on AWS! tutorial](https://nogibjj.github.io/candle-cookbook/aws/hello-aws.html)
 
 2. Create an AWS IAM User Policy "Candle-Cli" with `AmazonS3FullAccess` and `AmazonEC2FullAccess` permissions
 
@@ -31,7 +31,7 @@ Args:
 * --s3 ~ flag to list s3 resources
 * --ec2 ~ flag to list ec2 resources and status
 ```
-# To run simultaneously
+# To list simultaneously
 $ cargo run list --s3 --ec2
 ```
 
@@ -48,10 +48,11 @@ $ cargo run instance --id <INSTANCE_ID> --action <start|stop>
 
 **SSH Connect to EC2 Instance**
 
-Quick Tip: first run `cargo run list --ec2` to check instance is running!
+Quick Tip: first run `cargo run list --ec2` to confirm instance is running!
 
 Args:
 * --id ~ instance id
+* --mnt ~ mount local model directory to EC2 on launch
 
 ```
 $ cargo run connect --id <INSTANCE_ID>
@@ -59,7 +60,7 @@ $ cargo run connect --id <INSTANCE_ID>
 # To close SSH tunnel
 $ exit
 
-# Make sure to stop EC2 once finished
+# Make sure to stop your EC2 instance to avoid charges
 $ cargo run instance --id <INSTANCE_ID> --action stop
 ```
 
@@ -92,6 +93,11 @@ $ cargo run object --bucket <bucket_name> --key <object_key> --action <upload|de
 ```
 
 ## Model Sources
+
+1. Prebuilt on EC2
+2. Mount from local directory ()
+3. Cp from S3
+4. Download prebuilt binaries
 
 Once connected to EC2 you can get and run any of the prebuilt binaries [here](https://github.com/athletedecoded/cookbook-binaries/tree/main/binaries). Make sure to run `chmod +x` to give EC2 execution permissions!
 
