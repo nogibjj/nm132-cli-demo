@@ -77,8 +77,8 @@ pub async fn ssh_connect(client: &Client, id: &str, mnt_dir: &str) -> Result<(),
     // Get instance endpoint
     let endpoint = get_endpoint(client, id).await?;
     // If mount, mount local directory to instance
-    println!("Mounting directory {mnt_dir} to EC2");
     if mnt_dir != " " {
+        println!("Mounting directory {mnt_dir} to EC2");
         let mount_command = format!("scp -i {ec2_path} -r {mnt_dir} ubuntu@{endpoint}:/home/ubuntu");
         std::process::Command::new("sh")
             .arg("-c")
