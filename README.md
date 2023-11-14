@@ -4,6 +4,8 @@
 
 A Rust CLI tool to support [Candle Cookbook](https://github.com/nogibjj/candle-cookbook/tree/main) on AWS built using the [AWS SDK for Rust](https://github.com/awslabs/aws-sdk-rust) 
 
+![Image](./assets/aws-cli.png)
+
 Jump to:
 * [Setup](#setup)
 * [CLI Commands](#cli-commands)
