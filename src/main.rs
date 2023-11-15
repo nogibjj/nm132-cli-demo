@@ -18,22 +18,10 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     List(ListArgs),             // list resources i.e. s3 buckets, ec2 instances
-    Instance(InstanceArgs),     // start/stop ec2 instance by id
-    Connect(ConnectArgs),         // connect to ec2 instance by id with model sync options   
+    Instance(InstanceArgs),     // start/stop/endpoint ec2 instance by id
+    Connect(ConnectArgs),       // connect to ec2 instance by id with model sync options   
     Bucket(BucketArgs),         // create, list items, or delete a bucket
     Object(ObjectArgs),         // upload, delete or get object from a bucket
-}
-
-#[derive(Args)]
-struct ModelArgs {
-   #[arg(short, long)]
-   src: Option<String>,
-   #[arg(short, long)]
-   dir: Option<String>,
-   #[arg(short, long)]
-   target: Option<String>,
-   #[arg(short, long)]
-   mdl: Option<String>,   // "all" will sync entire folder
 }
 
 #[derive(Args)]
@@ -115,6 +103,13 @@ async fn main() {
                     ec2::stop_instance(&ec2client, &args.id.unwrap())
                         .await
                         .unwrap();
+                }
+                // get endpoint
+                "endpoint" => {
+                    let endpoint = ec2::get_endpoint(&ec2client, &args.id.unwrap())
+                        .await
+                        .unwrap();
+                    println!("Public endpoint: https://{}", endpoint);
                 }
                 _ => {
                     println!("Useage: cargo run instance --id <instance_id> --action <start|stop>");

@@ -49,8 +49,9 @@ Args:
 * --action:
     * start: start instance
     * stop: stop instance
+    * endpoint: get public endpoint
 ```
-$ cargo run instance --id <INSTANCE_ID> --action <start|stop>
+$ cargo run instance --id <INSTANCE_ID> --action <start|stop|endpoint>
 ```
 
 
