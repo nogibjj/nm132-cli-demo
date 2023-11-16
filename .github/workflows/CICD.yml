@@ -44,7 +44,14 @@ jobs:
             --repo="$GITHUB_REPOSITORY" \
             --title="${GITHUB_REPOSITORY#*/} ${tag}" \
             --generate-notes
-
-
-      
-  
+    - name: Add Download Badge
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ inputs.version }}
+      run: |
+        sed -i "1s;^;[![CI/CD Pipeline](https://github.com/${GITHUB_REPOSITORY}/actions/workflows/CICD.yml/badge.svg) ![Download Latest](https://img.shields.io/badge/Download%20Latest-$tag-blue.svg)](https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/$tag.zip)\n\n;" README.md
+        git config user.name "${{ github.actor }}"
+        git config user.email "${{ github.actor }}@users.noreply.github.com"
+        git add README.md
+        git commit -m "Update Download badge for version $tag"
+        git push

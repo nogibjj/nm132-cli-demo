@@ -1,5 +1,3 @@
-![CI/CD Pipeline](https://github.com/athletedecoded/aws-candle/actions/workflows/CICD.yml/badge.svg)
-
 # AWS Candle CLI Tool
 
 A Rust CLI tool to support [Candle Cookbook](https://github.com/nogibjj/candle-cookbook/tree/main) on AWS built using the [AWS SDK for Rust](https://github.com/awslabs/aws-sdk-rust) 
@@ -220,13 +218,17 @@ chmod +x mistral-cudnn
 ./mistral-cudnn --prompt "who invented the lightbulb"
 ```
 
-## CI/CD
-
-Github Actions + automated binary release configured in [.github/workflows/CICD.yml](.github/workflows/CICD.yml)
+## AWS Candle CLI Binary
 
 **Build Executable Locally**
 ```
 $ make release
+```
+
+**Run AWS Candle CLI Locally**
+```
+$ cd target/release
+$ ./aws-candle <COMMANDS>
 ```
 
 ## References
