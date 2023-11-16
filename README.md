@@ -1,3 +1,5 @@
+[![CI/CD Pipeline](https://github.com/athletedecoded/aws-candle/actions/workflows/CICD.yml/badge.svg) ![Download Latest](https://img.shields.io/badge/Download%20Latest-v.0.0.1-blue.svg)](https://github.com/athletedecoded/aws-candle/archive/refs/tags/v.0.0.1.zip)
+
 # AWS Candle CLI Tool
 
 A Rust CLI tool to support [Candle Cookbook](https://github.com/nogibjj/candle-cookbook/tree/main) on AWS built using the [AWS SDK for Rust](https://github.com/awslabs/aws-sdk-rust) 
