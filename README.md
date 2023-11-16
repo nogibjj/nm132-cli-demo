@@ -222,9 +222,9 @@ chmod +x mistral-cudnn
 
 ## CI/CD
 
-Github Actions configured in [.github/workflows/CICD.yml](.github/workflows/CICD.yml)
+Github Actions + automated binary release configured in [.github/workflows/CICD.yml](.github/workflows/CICD.yml)
 
-**Build Executable**
+**Build Executable Locally**
 ```
 $ make release
 ```
