@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [![CI/CD Pipeline](https://github.com/athletedecoded/aws-candle/actions/workflows/CICD.yml/badge.svg) ![Download Latest](https://img.shields.io/badge/Download%20Latest-v.0.0.1-blue.svg)](https://github.com/athletedecoded/aws-candle/archive/refs/tags/v.0.0.1.zip)
 
 # AWS Candle CLI Tool
@@ -238,3 +239,6 @@ $ ./aws-candle <COMMANDS>
 * [AWS SDK for Rust](https://github.com/awslabs/aws-sdk-rust)
 * [AWS Toolkit Credential Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where)
 * [AWS Credentials for VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/setup-credentials.html)
+=======
+# nm132-cli-demo
+>>>>>>> fce76909c04a485ae76f07edcf71a2ff2ff69575
