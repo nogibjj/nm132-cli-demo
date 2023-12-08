@@ -6,9 +6,6 @@ mod ec2;
 //add extended help
 #[clap(
     version = "1.0",
-    author = "Kahlia Hogg",
-    about = "AWS Candle CLI",
-    after_help = "Example: aws-candle"
 )]
 struct Cli {
     #[clap(subcommand)]
